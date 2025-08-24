@@ -1,0 +1,485 @@
+@import "tailwindcss";
+
+/* Retro font utilities */
+:root {
+	--font-pixel: "Press Start 2P", system-ui, sans-serif;
+	--font-terminal: "VT323", ui-monospace, SFMono-Regular, Menlo, Monaco,
+		Consolas, "Liberation Mono", "Courier New", monospace;
+	--crt-glow: 0 0 10px rgba(0, 255, 170, 0.4), 0 0 20px rgba(0, 255, 170, 0.2);
+	--color-bg: #0b1020;
+	--color-panel: #0e1630;
+	--color-primary: #00ffaa;
+	--color-secondary: #66d9ff;
+	--color-accent: #ff2e88;
+	scroll-behavior: smooth;
+}
+
+@layer base {
+	html,
+	body,
+	#root {
+		height: 100%;
+		scroll-behavior: smooth;
+		overflow-anchor: auto;
+	}
+	body {
+		color: rgba(102, 217, 255, 0.9);
+		background-color: var(--color-bg);
+		font-family: var(--font-terminal);
+		background-image: radial-gradient(
+			transparent 1px,
+			rgba(255, 255, 255, 0.03) 1px
+		);
+		background-size: 3px 3px;
+	}
+
+	/* Fix to prevent FOUC (Flash of Unstyled Content) during navigation */
+	.page-transition-active {
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	/* Prevent buttons from being clickable during transitions */
+	button[disabled] {
+		opacity: 0.7;
+		cursor: not-allowed;
+	}
+
+	/* Improved font scaling for better mobile readability */
+	@media (max-width: 640px) {
+		:root {
+			font-size: 14px;
+		}
+		.font-\[var\(--font-pixel\)\] {
+			font-size: 0.9em;
+			line-height: 1.5;
+		}
+	}
+
+	/* Tablet optimizations */
+	@media (min-width: 641px) and (max-width: 1023px) {
+		:root {
+			font-size: 15px;
+		}
+	}
+
+	/* Prevent content from overflowing on small screens */
+	img,
+	video,
+	canvas,
+	svg {
+		max-width: 100%;
+		height: auto;
+	}
+}
+
+@layer utilities {
+	.pixel-border {
+		box-shadow: 0 0 0 4px var(--color-secondary), 0 0 0 8px #0a0f1e;
+	}
+	.pixel-border-sm {
+		box-shadow: 0 0 0 1px var(--color-secondary), 0 0 0 2px #0a0f1e;
+	}
+	.crt {
+		position: relative;
+		text-shadow: 0 0 2px #00ffaa99, 0 0 6px #00ffaa55;
+	}
+	.crt::after {
+		content: "";
+		pointer-events: none;
+		position: absolute;
+		inset: 0;
+		background: repeating-linear-gradient(
+			to bottom,
+			rgba(255, 255, 255, 0.03) 0px,
+			rgba(255, 255, 255, 0.03) 2px,
+			transparent 2px,
+			transparent 4px
+		);
+		mix-blend-mode: overlay;
+	}
+	.glitch {
+		animation: glitch 1s linear infinite;
+		position: relative;
+	}
+	.glitch::before,
+	.glitch::after {
+		content: attr(data-text);
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		clip: rect(0, 0, 0, 0);
+	}
+	.glitch::before {
+		left: -3px;
+		text-shadow: 2px 0 var(--color-accent);
+		animation: glitch-animation 3s infinite linear alternate-reverse;
+	}
+	.glitch::after {
+		left: 3px;
+		text-shadow: -2px 0 var(--color-primary);
+		animation: glitch-animation 2s infinite linear alternate-reverse;
+	}
+	.scanline {
+		position: relative;
+	}
+	.scanline::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(
+			rgba(255, 255, 255, 0.04),
+			rgba(0, 0, 0, 0.1)
+		);
+		mix-blend-mode: overlay;
+		pointer-events: none;
+	}
+	.pixelate {
+		image-rendering: pixelated;
+	}
+	.btn-pixel {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.75rem 1rem;
+		background: var(--color-panel);
+		color: var(--color-primary);
+		border: 1px solid var(--color-primary);
+		transition: transform 120ms ease, background 120ms ease;
+		user-select: none;
+		box-shadow: 0 0 0 2px #0a0f1e, 0 0 0 4px var(--color-primary);
+		font-family: var(--font-pixel);
+	}
+	.btn-pixel:hover {
+		background: color-mix(
+			in oklab,
+			var(--color-primary) 10%,
+			var(--color-panel)
+		);
+	}
+	.btn-pixel:active {
+		transform: translateY(1px);
+	}
+
+	/* Responsive utilities */
+	.responsive-container {
+		width: 95%;
+		max-width: 1200px;
+		margin-left: auto;
+		margin-right: auto;
+		padding-left: 1rem;
+		padding-right: 1rem;
+	}
+
+	/* Adapt pixel borders for mobile */
+	@media (max-width: 640px) {
+		.pixel-border {
+			box-shadow: 0 0 0 2px var(--color-secondary), 0 0 0 4px #0a0f1e;
+		}
+	}
+
+	/* Fix button sizes on mobile */
+	@media (max-width: 640px) {
+		.btn-pixel {
+			padding: 0.5rem 0.75rem;
+			font-size: 0.75rem;
+		}
+	}
+}
+
+/* Animation keyframes */
+@keyframes pulseGlow {
+	0%,
+	100% {
+		filter: drop-shadow(0 0 0 rgba(0, 255, 170, 0));
+	}
+	50% {
+		filter: drop-shadow(0 0 10px rgba(0, 255, 170, 0.8));
+	}
+}
+
+@keyframes glitch {
+	2%,
+	64% {
+		transform: translate(2px, 0) skew(0deg);
+	}
+	4%,
+	60% {
+		transform: translate(-2px, 0) skew(0deg);
+	}
+	62% {
+		transform: translate(0, 0) skew(5deg);
+	}
+}
+
+@keyframes glitch-animation {
+	0% {
+		clip: rect(43px, 9999px, 44px, 0);
+	}
+	5% {
+		clip: rect(92px, 9999px, 74px, 0);
+	}
+	10% {
+		clip: rect(58px, 9999px, 23px, 0);
+	}
+	15% {
+		clip: rect(5px, 9999px, 67px, 0);
+	}
+	20% {
+		clip: rect(7px, 9999px, 45px, 0);
+	}
+	25% {
+		clip: rect(65px, 9999px, 52px, 0);
+	}
+	30% {
+		clip: rect(94px, 9999px, 15px, 0);
+	}
+	35% {
+		clip: rect(67px, 9999px, 34px, 0);
+	}
+	40% {
+		clip: rect(17px, 9999px, 86px, 0);
+	}
+	45% {
+		clip: rect(85px, 9999px, 93px, 0);
+	}
+	50% {
+		clip: rect(62px, 9999px, 5px, 0);
+	}
+	55% {
+		clip: rect(95px, 9999px, 46px, 0);
+	}
+	60% {
+		clip: rect(19px, 9999px, 26px, 0);
+	}
+	65% {
+		clip: rect(27px, 9999px, 73px, 0);
+	}
+	70% {
+		clip: rect(25px, 9999px, 42px, 0);
+	}
+	75% {
+		clip: rect(55px, 9999px, 88px, 0);
+	}
+	80% {
+		clip: rect(12px, 9999px, 26px, 0);
+	}
+	85% {
+		clip: rect(24px, 9999px, 34px, 0);
+	}
+	90% {
+		clip: rect(57px, 9999px, 16px, 0);
+	}
+	95% {
+		clip: rect(67px, 9999px, 92px, 0);
+	}
+	100% {
+		clip: rect(39px, 9999px, 45px, 0);
+	}
+}
+
+@keyframes pixelate {
+	0% {
+		filter: brightness(1.1) contrast(1.1);
+	}
+	2% {
+		filter: brightness(0.9) contrast(1.2);
+	}
+	4% {
+		filter: brightness(1.2) contrast(0.9);
+	}
+	6% {
+		filter: brightness(1) contrast(1);
+	}
+	8% {
+		filter: brightness(1.1) contrast(0.9);
+	}
+	10% {
+		filter: brightness(0.95) contrast(1.1);
+	}
+	100% {
+		filter: brightness(1) contrast(1);
+	}
+}
+
+@keyframes crt-flicker {
+	0% {
+		opacity: 1;
+	}
+	1% {
+		opacity: 0.8;
+	}
+	2% {
+		opacity: 1;
+	}
+	12% {
+		opacity: 1;
+	}
+	12.5% {
+		opacity: 0.7;
+	}
+	13% {
+		opacity: 1;
+	}
+	80% {
+		opacity: 1;
+	}
+	80.5% {
+		opacity: 0.9;
+	}
+	81% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+/* Retro sprite movement animation */
+@keyframes sprite-move {
+	0% {
+		background-position: 0 0;
+	}
+	100% {
+		background-position: -192px 0;
+	} /* Change this based on your sprite width */
+}
+
+/* Create a static noise effect */
+.noise {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	pointer-events: none;
+	z-index: 9999;
+	opacity: 0.05;
+	background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+	mix-blend-mode: overlay;
+}
+
+/* Pixel loader animation */
+.pixel-loader {
+	width: 12px;
+	height: 12px;
+	box-shadow: 0 0 0 2px var(--color-primary);
+	position: relative;
+	overflow: hidden;
+	animation: pixelate 3s steps(1) infinite;
+}
+
+.pixel-loader::after {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: var(--color-primary);
+	animation: loader 2s steps(4) infinite;
+}
+
+@keyframes loader {
+	0% {
+		clip-path: inset(0 100% 0 0);
+	}
+	100% {
+		clip-path: inset(0 0 0 0);
+	}
+}
+
+/* Scan effect for appearing elements */
+.scan-in {
+	position: relative;
+	overflow: hidden;
+	animation: crt-flicker 2s linear 1 forwards; /* Added 'forwards' to maintain end state */
+}
+
+.scan-in::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 4px;
+	background: linear-gradient(
+		to bottom,
+		rgba(0, 255, 170, 0.8) 0%,
+		rgba(0, 255, 170, 0) 100%
+	);
+	z-index: 1;
+	animation: scan 1.5s linear 1 forwards; /* Added 'forwards' to maintain end state */
+}
+
+@keyframes scan {
+	0% {
+		top: -20%;
+	}
+	100% {
+		top: 120%;
+	}
+}
+
+/* Create new keyframes for navigation transitions */
+@keyframes fadeOutIn {
+	0% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+/* Navigation helper class */
+.navigation-target {
+	will-change: opacity, transform;
+}
+
+/* Responsive text classes */
+.text-responsive {
+	font-size: clamp(1rem, 2.5vw, 1.5rem);
+}
+
+.title-responsive {
+	font-size: clamp(1.5rem, 4vw, 3rem);
+}
+
+/* Improve form elements responsiveness */
+@media (max-width: 640px) {
+	input,
+	textarea,
+	select,
+	button {
+		font-size: 16px !important; /* Prevents iOS zoom on focus */
+	}
+}
+
+/* Stack elements properly on small screens */
+@media (max-width: 768px) {
+	.md\:grid-cols-2,
+	.md\:grid-cols-3 {
+		grid-template-columns: 1fr !important;
+	}
+
+	.md\:flex-row {
+		flex-direction: column !important;
+	}
+}
+
+/* Optimize landscape orientation for mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+	.min-h-\[85vh\] {
+		min-height: 100vh;
+	}
+
+	.py-16 {
+		padding-top: 2rem;
+		padding-bottom: 2rem;
+	}
+}
